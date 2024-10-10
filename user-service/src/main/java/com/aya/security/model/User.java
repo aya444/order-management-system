@@ -27,7 +27,7 @@ public class User implements UserDetails {
     private String firstName;
     private String lastName;
     private String email;
-    private String pass; // cannot be named password as User of UserDetails interface has a password attribute
+    private String password; // cannot be named password as User of UserDetails interface has a password attribute
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -43,7 +43,7 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return pass;
+        return password;
     }
 
 }
