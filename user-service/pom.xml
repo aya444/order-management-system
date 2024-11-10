@@ -12,7 +12,7 @@
     <artifactId>user-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>security</name>
-    <description>Demo project for Spring Boot</description>
+    <description>User Management Microservice for the Order Management System</description>
     <url/>
     <licenses>
         <license/>
