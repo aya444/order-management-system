@@ -24,7 +24,8 @@ public class CategoryController {
 
     @PostMapping("/create")
     public ResponseEntity<CategoryDto> addCategory(@RequestBody @NotNull CategoryDto categoryDto) {
-        return ResponseEntity.ok(categoryService.createCategory(categoryDto));
+        CategoryDto newCategory = categoryService.createCategory(categoryDto);
+        return new ResponseEntity<>(newCategory, HttpStatus.OK);
     }
 
     @PutMapping("/edit/{id}")
