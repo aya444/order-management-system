@@ -1,6 +1,7 @@
 package com.aya.user_service.config;
 
 import com.aya.user_service.service.JWTService;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component // to make it a spring bean
 @RequiredArgsConstructor
@@ -24,9 +28,9 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
 
     /*
-    * Spring's @NonNullApi annotation, applies @NonNull by default to all method parameters in a package or class,
-    * meaning that all parameters are implicitly expected to be non-null unless otherwise specified.
-    */
+     * Spring's @NonNullApi annotation, applies @NonNull by default to all method parameters in a package or class,
+     * meaning that all parameters are implicitly expected to be non-null unless otherwise specified.
+     */
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -51,10 +55,18 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
             if (jwtService.isTokenValid(jwtToken, userDetails)) {
+                // Extract roles from the JWT token
+                List<String> roles = jwtService.extractRoles(jwtToken);
+
+                // Convert roles to GrantedAuthority
+                List<GrantedAuthority> authorities = roles.stream()
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
+
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null, // bec. we don't have credentials when we made the user
-                        userDetails.getAuthorities()
+                        authorities
                 );
                 authenticationToken.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request)

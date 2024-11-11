@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -14,12 +15,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity // Enables Spring Security’s web security support and provides the Spring MVC integration.
 @RequiredArgsConstructor
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
     private final JWTAuthenticationFilter jwtAuthenticationFilter; //  A custom filter for handling JWT authentication.
     private final AuthenticationProvider authenticationProvider; // A component that performs authentication logic.
 
-
-    // TODO implement permissions
     // This method configures the security filter chain, defining how HTTP requests are secured.
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

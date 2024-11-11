@@ -1,9 +1,9 @@
 package com.aya.user_service.service;
 
+import com.aya.user_service.exception.CannotCreateAdminException;
 import com.aya.user_service.mapper.UserMapper;
 import com.aya.user_service.reqres.AuthenticationResponse;
-import com.aya.user_service.reqres.RegisterRequest;
-import com.aya.user_service.model.Role;
+import com.aya.user_service.reqres.UserDto;
 import com.aya.user_service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,8 +15,11 @@ public class RegisterService {
     private final JWTService jwtService;
     private final UserMapper userMapper;
 
-    public AuthenticationResponse register(RegisterRequest request) {
-        var user = userMapper.fromDtoToUser(request, Role.CUSTOMER);
+    public AuthenticationResponse register(UserDto request) {
+        if(request.getRole().equals("ADMIN")) {
+            throw new CannotCreateAdminException("Cannot create an admin account, please refer to an existing admin");
+        }
+        var user = userMapper.fromDtoToUser(request);
         userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()

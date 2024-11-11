@@ -1,6 +1,6 @@
 package com.aya.user_service.config;
 
-import com.aya.user_service.exception.UserEmailNotFoundException;
+import com.aya.user_service.exception.NoUserFoundException;
 import com.aya.user_service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -23,7 +23,7 @@ public class UserManagementApplicationConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByEmail(username) // findByEmail(username) returns Optional so orElseThrow is needed
-                .orElseThrow(() -> new UserEmailNotFoundException("User not found!"));
+                .orElseThrow(() -> new NoUserFoundException("User not found!"));
     }
 
     // Data Access Object which is responsible to fetch user details and encode password, etc

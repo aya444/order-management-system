@@ -5,21 +5,19 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
 public class JWTService {
 
     @Value("${JWT_SECRET}")
-    private String secretKey;
+    private String SECRET_KEY;
 
     /*
          Key -> is what represent a signature
@@ -27,7 +25,7 @@ public class JWTService {
          then later compare it with the signature of the token in extractAllClaims method
     */
     private SecretKey getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -65,23 +63,35 @@ public class JWTService {
         return extractClaim(token, Claims::getSubject); // getSubject() -> Subject(username) of the JWT (the user)
     }
 
-    // 5- Generate a JWT token for the user
-    public String generateToken(Map<String, Objects> extraClaims, UserDetails userDetails) {
-        Date creationData = new Date(System.currentTimeMillis());
-        Date expirationDate = new Date(System.currentTimeMillis() + 1000 * 60 * 24);
-
-        return Jwts
-                .builder()
-                .claims(extraClaims)
-                .subject(userDetails.getUsername())
-                .issuedAt(creationData).expiration(expirationDate) // Token will be valid for 24H + 60000 millisecond
-                .signWith(getSignInKey()) // Set which key algorithm to sign this token with
-                .compact(); // To generate and return the token
+    public List<String> extractRoles(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("roles", List.class); // Ensure "roles" matches the claim key
     }
 
-    // To Generate token without extra claims
+
+    // 5- Generate a JWT token for the user
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        Map<String, Object> claims = new HashMap<>(); // Claims are the payload of the token, where we store user-related data such as roles, user ID, or other metadata.
+
+        // Add roles to the claims
+        claims.put("roles", userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role) // Ensure ROLE_ prefix
+                .toList());
+        return createToken(claims, userDetails.getUsername());
+    }
+
+    private String createToken(Map<String, Object> claims, String subject) {
+        Date creationDate = new Date(System.currentTimeMillis());
+        Date expirationDate = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24); // 24 hours
+
+        return Jwts.builder()
+                .claims(claims)
+                .subject(subject) // User's identity
+                .issuedAt(creationDate) // When token is created
+                .expiration(expirationDate) // Token expiration time
+                .signWith(getSignInKey()) // Signing key
+                .compact(); // Generate the token
     }
 
     private Date extractExpiration(String token) {
@@ -96,6 +106,5 @@ public class JWTService {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
-
 
 }

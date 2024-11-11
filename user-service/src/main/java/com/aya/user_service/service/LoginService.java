@@ -1,6 +1,6 @@
 package com.aya.user_service.service;
 
-import com.aya.user_service.exception.UserEmailNotFoundException;
+import com.aya.user_service.exception.NoUserFoundException;
 import com.aya.user_service.repository.UserRepository;
 import com.aya.user_service.reqres.LogInRequest;
 import com.aya.user_service.reqres.AuthenticationResponse;
@@ -23,7 +23,7 @@ public class LoginService {
                         request.getPassword()
                 )
         );
-        var user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new UserEmailNotFoundException("Email not Found!"));
+        var user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new NoUserFoundException("Email not Found!"));
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
