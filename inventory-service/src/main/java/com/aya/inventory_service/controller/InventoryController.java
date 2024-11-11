@@ -3,7 +3,7 @@ package com.aya.inventory_service.controller;
 import com.aya.inventory_service.dto.ProductDto;
 import com.aya.inventory_service.service.InventoryService;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -13,14 +13,10 @@ import java.util.List;
 
 @RestController
 @Validated
+@RequiredArgsConstructor
 @RequestMapping("inventory")
 public class InventoryController {
     private final InventoryService inventoryService;
-
-    @Autowired
-    public InventoryController(InventoryService inventoryService) {
-        this.inventoryService = inventoryService;
-    }
 
     @GetMapping("/{catName}")
     public ResponseEntity<List<ProductDto>> getProductByCategoryName(@PathVariable("catName") @NotNull String catName) {

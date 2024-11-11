@@ -4,6 +4,7 @@ import com.aya.inventory_service.dto.ProductDto;
 import com.aya.inventory_service.service.ProductService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -13,14 +14,11 @@ import java.util.List;
 
 @RestController
 @Validated
+@RequiredArgsConstructor
 @RequestMapping("product")
 public class ProductController {
 
     private final ProductService productService;
-
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
 
     @PostMapping("/create")
     public ResponseEntity<String> addProduct(@RequestBody @Valid ProductDto productDto) {

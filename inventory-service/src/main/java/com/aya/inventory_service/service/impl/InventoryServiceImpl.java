@@ -9,24 +9,18 @@ import com.aya.inventory_service.repository.InventoryRepository;
 import com.aya.inventory_service.repository.ProductRepository;
 import com.aya.inventory_service.service.InventoryService;
 import com.aya.inventory_service.util.ProductMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 
 @Service
+@RequiredArgsConstructor
 public class InventoryServiceImpl implements InventoryService {
     private final InventoryRepository inventoryRepository;
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
-
-    @Autowired
-    public InventoryServiceImpl(InventoryRepository inventoryRepository, ProductRepository productRepository, ProductMapper productMapper) {
-        this.inventoryRepository = inventoryRepository;
-        this.productRepository = productRepository;
-        this.productMapper = productMapper;
-    }
 
     @Override
     public List<ProductDto> getProductByCategoryName(String categoryName) {

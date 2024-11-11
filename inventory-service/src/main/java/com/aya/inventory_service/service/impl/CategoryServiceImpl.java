@@ -7,23 +7,18 @@ import com.aya.inventory_service.exception.InvalidCategoryDataException;
 import com.aya.inventory_service.repository.CategoryRepository;
 import com.aya.inventory_service.service.CategoryService;
 import com.aya.inventory_service.util.CategoryMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
     private static final String CATEGORY_ID_NOT_FOUND_MESSAGE = "Category Id not found!";
     private static final String CATEGORY_DATA_CANNOT_BE_NULL_MESSAGE = "Category data cannot be null!";
-
-    @Autowired
-    public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
-        this.categoryRepository = categoryRepository;
-        this.categoryMapper = categoryMapper;
-    }
 
     @Override
     public CategoryDto createCategory(CategoryDto categoryDto) {

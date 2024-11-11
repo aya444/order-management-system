@@ -3,7 +3,7 @@ package com.aya.inventory_service.controller;
 import com.aya.inventory_service.dto.CategoryDto;
 import com.aya.inventory_service.service.CategoryService;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -13,14 +13,10 @@ import java.util.List;
 
 @RestController
 @Validated
+@RequiredArgsConstructor
 @RequestMapping("category")
 public class CategoryController {
     private final CategoryService categoryService;
-
-    @Autowired
-    public CategoryController(CategoryService categoryService) {
-        this.categoryService = categoryService;
-    }
 
     @PostMapping("/create")
     public ResponseEntity<CategoryDto> addCategory(@RequestBody @NotNull CategoryDto categoryDto) {
