@@ -15,6 +15,13 @@ spring:
             - Path=/product/**
             - Path=/category/**
             - Path=/inventory/**
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user/**
+            - Path=/admin/**
+      default-filters:
+        - TokenRelay # Pass token to downstream services
 
 server:
   port: 8765
