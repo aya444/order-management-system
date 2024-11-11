@@ -13,6 +13,8 @@ spring:
           uri: lb://INVENTORY-SERVICE
           predicates:
             - Path=/product/**
-            
+            - Path=/category/**
+            - Path=/inventory/**
+
 server:
   port: 8765
