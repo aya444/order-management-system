@@ -1,6 +1,6 @@
 spring:
   application:
-    name: security
+    name: user-service
 
   datasource:
     url: jdbc:postgresql://localhost:5432/user_db?useSSL=false
@@ -17,6 +17,9 @@ spring:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: 8081
 
 jwt:
   secret: ${JWT_SECRET}

@@ -2,6 +2,9 @@ spring:
   application:
     name: api-gateway
 
+  main:
+    web-application-type: reactive
+
   cloud:
     gateway:
       discovery:
@@ -23,5 +26,14 @@ spring:
       default-filters:
         - TokenRelay # Pass token to downstream services
 
+jwt:
+  secret: ${JWT_SECRET}
+
 server:
   port: 8765
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+
+

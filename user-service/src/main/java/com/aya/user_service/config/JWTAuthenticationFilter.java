@@ -1,6 +1,6 @@
 package com.aya.user_service.config;
 
-import com.aya.user_service.service.JWTService;
+import com.aya.user_service.utils.JwtUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Component // to make it a spring bean
 @RequiredArgsConstructor
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
-    private final JWTService jwtService;
+    private final JwtUtils jwtUtils;
     private final UserDetailsService userDetailsService;
 
     /*
@@ -49,14 +49,14 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         jwtToken = authHeader.substring(7);
 
         // Extract the username from the jwtToken
-        String userEmail = jwtService.extractUsername(jwtToken);
+        String userEmail = jwtUtils.extractUsername(jwtToken);
 
         // Validate user, check if userEmail is not null AND user is not authenticated yet
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-            if (jwtService.isTokenValid(jwtToken, userDetails)) {
+            if (jwtUtils.isTokenValid(jwtToken, userDetails)) {
                 // Extract roles from the JWT token
-                List<String> roles = jwtService.extractRoles(jwtToken);
+                List<String> roles = jwtUtils.extractRoles(jwtToken);
 
                 // Convert roles to GrantedAuthority
                 List<GrantedAuthority> authorities = roles.stream()

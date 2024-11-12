@@ -1,4 +1,4 @@
-package com.aya.user_service.service;
+package com.aya.user_service.utils;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -14,7 +14,7 @@ import java.util.*;
 import java.util.function.Function;
 
 @Service
-public class JWTService {
+public class JwtUtils {
 
     @Value("${JWT_SECRET}")
     private String SECRET_KEY;
