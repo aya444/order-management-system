@@ -107,4 +107,21 @@ public class JwtUtils {
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
+
+//    public String generateToken(String userId) {
+//        Date creationDate = new Date(System.currentTimeMillis());
+//        Date expirationDate = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24); // 24 hours
+//
+//        return Jwts.builder()
+//                .subject(userId) // User's identity
+//                .issuedAt(creationDate) // When token is created
+//                .expiration(expirationDate) // Token expiration time
+//                .signWith(getSignInKey()) // Signing key
+//                .compact(); // Generate the token
+//    }
+//
+//    private SecretKey getSignInKey() {
+//        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+//        return Keys.hmacShaKeyFor(keyBytes);
+//    }
 }
