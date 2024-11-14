@@ -68,4 +68,10 @@ public class ProductController {
         return new ResponseEntity<>(productPrice, HttpStatus.OK);
     }
 
+    @GetMapping("/quantity/{id}")
+    public ResponseEntity<Integer> getProductQuantityById(@PathVariable("id") @NotNull Integer id) {
+        Integer productQuantity = productService.getProductQuantity(id);
+        return new ResponseEntity<>(productQuantity, HttpStatus.OK);
+    }
+
 }

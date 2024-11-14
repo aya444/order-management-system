@@ -11,6 +11,7 @@ import com.aya.order_service.exception.InvalidOrderDataException;
 import com.aya.order_service.exception.NoOrderFoundException;
 import com.aya.order_service.exception.NoProductFoundException;
 import com.aya.order_service.feign.InventoryClient;
+import com.aya.order_service.kafka.KafkaProducer;
 import com.aya.order_service.repository.OrderRepository;
 import com.aya.order_service.service.OrderService;
 import com.aya.order_service.util.OrderMapper;
@@ -28,11 +29,25 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final InventoryClient inventoryClient;
     private final OrderMapper orderMapper;
+    private final KafkaProducer kafkaProducer;
+    private static final String ORDER_NOT_FOUND_MESSAGE = "Order not found!";
+    private static final String ORDER_DATA_CANNOT_BE_NULL_MESSAGE = "Order data cannot be null!";
+    private static final String ORDER_ID_CANNOT_BE_NULL_MESSAGE = "Order id cannot be null!";
+    private static final String NO_PRODUCT_FOUND_MESSAGE = "No product found for the given product IDs";
 
+
+    private Order getOrderById(Integer id) {
+        if(id == null){
+            throw new InvalidOrderDataException(ORDER_ID_CANNOT_BE_NULL_MESSAGE);
+        }
+
+        return orderRepository.findById(id)
+                .orElseThrow(() -> new NoOrderFoundException(ORDER_NOT_FOUND_MESSAGE));
+    }
 
     public OrderDto createOrder(OrderInputDto orderInputDto) {
         if(orderInputDto == null){
-            throw new InvalidOrderDataException("Order data cannot be null");
+            throw new InvalidOrderDataException(ORDER_DATA_CANNOT_BE_NULL_MESSAGE);
         }
 
         // Convert ProductInputDto to ProductDto
@@ -41,7 +56,7 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
 
         if (productInputDtos.isEmpty()) {
-            throw new NoProductFoundException("No product found for the given product IDs");
+            throw new NoProductFoundException(NO_PRODUCT_FOUND_MESSAGE);
         }
 
         // Fetch product Ids
@@ -84,50 +99,34 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public void completeOrder(Integer id) {
-        if(id == null){
-            throw new InvalidOrderDataException("Order id cannot be null");
-        }
 
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new NoOrderFoundException("Order not found"));
-
+        Order order = getOrderById(id);
         order.setStatus(OrderStatus.COMPLETED);
         order.setUpdatedAt(LocalDateTime.now());
         orderRepository.save(order);
-        // Send message to Kafka
-//        kafkaTemplate.send("order-completed", "Order completed: " + orderId);
+        OrderDto orderDto = orderMapper.fromOrderToDto(order);
 
+        // Send message to Kafka
+        kafkaProducer.sendMessage(orderDto);
     }
 
-
-
     public void cancelOrder(Integer id) {
-        if(id == null){
-            throw new InvalidOrderDataException("Order id cannot be null");
-        }
 
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new NoOrderFoundException("Order not found"));
-
+        Order order = getOrderById(id);
         order.setStatus(OrderStatus.CANCELED);
         order.setUpdatedAt(LocalDateTime.now());
         orderRepository.save(order);
-
-        // Send message to Kafka
-//        kafkaTemplate.send("order-completed", "Order completed: " + orderId);
-
     }
 
     public List<OrderDto> getOrdersByCustomerId(Integer customerId) {
         if(customerId == null){
-            throw new InvalidOrderDataException("Order id cannot be null");
+            throw new InvalidOrderDataException(ORDER_ID_CANNOT_BE_NULL_MESSAGE);
         }
 
         List<Order> orders = orderRepository.findByCustomerId(customerId);
         if(orders.isEmpty()){
-            throw new NoOrderFoundException("No order found for the given customer ID");
+            throw new NoOrderFoundException(ORDER_NOT_FOUND_MESSAGE);
         }
-
         return orders.stream()
                 .map(orderMapper::fromOrderToDto)
                 .toList();

@@ -9,13 +9,13 @@ import com.aya.inventory_service.repository.CategoryRepository;
 import com.aya.inventory_service.repository.ProductRepository;
 import com.aya.inventory_service.service.ProductService;
 import com.aya.inventory_service.util.ProductMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
@@ -23,13 +23,6 @@ public class ProductServiceImpl implements ProductService {
     private static final String PRODUCT_ID_NOT_FOUND_MESSAGE = "Product with this Id not found!";
     private static final String PRODUCT_ID_CANNOT_BE_NULL = "Product Id cannot be null!";
     private static final String PRODUCT_DATA_CANNOT_BE_NULL_MESSAGE = "Product data cannot be null!";
-
-    @Autowired
-    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper, CategoryRepository categoryRepository) {
-        this.productRepository = productRepository;
-        this.productMapper = productMapper;
-        this.categoryRepository = categoryRepository;
-    }
 
     @Override
     public void createProduct(ProductDto productDto) {
@@ -91,6 +84,15 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return getProduct(id).getName();
+    }
+
+    @Override
+    public Integer getProductQuantity(Integer id) {
+        if (id == null) {
+            throw new InvalidProductDataException(PRODUCT_ID_CANNOT_BE_NULL);
+        }
+
+        return getProduct(id).getQuantity();
     }
 
     @Override

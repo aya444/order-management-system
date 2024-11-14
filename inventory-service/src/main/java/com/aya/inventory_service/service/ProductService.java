@@ -19,5 +19,7 @@ public interface ProductService {
 
     List<ProductDto> getProductsById(List<Integer> productIds);
 
+    Integer getProductQuantity(Integer id);
+
     void deleteProduct(Integer id);
 }
