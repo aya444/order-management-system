@@ -3,6 +3,7 @@ package com.aya.user_service.service;
 import com.aya.user_service.exception.InvalidUserDataException;
 import com.aya.user_service.exception.NoUserFoundException;
 import com.aya.user_service.mapper.UserMapper;
+import com.aya.user_service.model.Role;
 import com.aya.user_service.model.User;
 import com.aya.user_service.repository.UserRepository;
 import com.aya.user_service.reqres.UserDto;
@@ -49,6 +50,19 @@ public class UserService {
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
             return userMapper.fromUserToDto(user.get());
+        } else {
+            throw new NoUserFoundException(USER_NOT_FOUND_MESSAGE);
+        }
+    }
+
+    public String getCustomerById(int id) {
+        if (id == 0) {
+            throw new InvalidUserDataException("User id cannot be null!");
+        }
+
+        Optional<User> user = userRepository.findByIdAndRole(id, Role.CUSTOMER);
+        if (user.isPresent()) {
+           return user.get().getEmail();
         } else {
             throw new NoUserFoundException(USER_NOT_FOUND_MESSAGE);
         }
