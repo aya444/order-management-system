@@ -24,8 +24,8 @@ public class InventoryController {
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 
-    @PatchMapping("deduce/{id}")
-    public ResponseEntity<String> deductProductFromStock(@PathVariable("id") @NotNull Integer id, @RequestBody @NotNull Integer quantity) {
+    @PutMapping("deduce/{id}")
+    public ResponseEntity<String> deductProductFromStock(@PathVariable("id") @NotNull Integer id, @RequestParam @NotNull Integer quantity) {
         inventoryService.deductStock(id, quantity);
         return new ResponseEntity<>("Product deducted from stock", HttpStatus.OK);
     }

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -75,6 +76,24 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Double getProductPrice(Integer id) {
+        if (id == null) {
+            throw new InvalidProductDataException(PRODUCT_ID_CANNOT_BE_NULL);
+        }
+
+        return getProduct(id).getPrice();
+    }
+
+    @Override
+    public String getProductName(Integer id) {
+        if (id == null) {
+            throw new InvalidProductDataException(PRODUCT_ID_CANNOT_BE_NULL);
+        }
+
+        return getProduct(id).getName();
+    }
+
+    @Override
     public List<ProductDto> getAllProduct() {
         List<Product> productList = productRepository.findAll();
         return productList.stream()
@@ -93,5 +112,14 @@ public class ProductServiceImpl implements ProductService {
         } else {
             throw new ProductNotFoundException(PRODUCT_ID_NOT_FOUND_MESSAGE);
         }
+    }
+
+    @Override
+    public List<ProductDto> getProductsById(List<Integer> productIds) {
+        return productIds.stream()
+                .map(id -> productRepository.findById(id)
+                        .orElseThrow(() -> new ProductNotFoundException("Product cannot be found with ID: " + id)))
+                .map(productMapper::fromEntityToDto)
+                .toList();
     }
 }
