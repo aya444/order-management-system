@@ -5,11 +5,42 @@ spring:
   cloud:
     gateway:
       routes:
-        # Route for USER-SERVICE
-        - id: user-service
-          uri: lb://USER-SERVICE # Load-balances requests to USER-SERVICE
+        - id: user-service-user
+          uri: lb://USER-SERVICE 
           predicates:
-            - Path=/user/** # Routes matching /user/** are forwarded to USER-SERVICE
+            - Path=/user/** 
+          filters:
+            - AuthenticationFilter
+        - id: user-service-admin
+          uri: lb://USER-SERVICE 
+          predicates:
+            - Path=/admin/** 
+          filters:
+            - AuthenticationFilter
+
+        - id: inventory-service-inventory
+          uri: lb://INVENTORY-SERVICE 
+          predicates:
+            - Path=/inventory/** 
+          filters:
+            - AuthenticationFilter
+        - id: inventory-service-product
+          uri: lb://INVENTORY-SERVICE 
+          predicates:
+            - Path=/product/** 
+          filters:
+            - AuthenticationFilter
+        - id: inventory-service-category
+          uri: lb://INVENTORY-SERVICE 
+          predicates:
+            - Path=/category/** 
+          filters:
+            - AuthenticationFilter
+
+        - id: order-service
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/order/**
           filters:
             - AuthenticationFilter
 
@@ -20,7 +51,7 @@ eureka:
 
 
 server:
-  port: 8765 # API Gateway port
+  port: 8765 #
 
 jwt:
   secret: ${JWT_SECRET} # Replace with your actual JWT secret
