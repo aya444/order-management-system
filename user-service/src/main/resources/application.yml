@@ -6,7 +6,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/user_db?useSSL=false
     driver-class-name: org.postgresql.Driver
     username: postgres
-    password: Podman56
+    password: ${PASSWORD}
 
   jpa:
     hibernate:
@@ -23,7 +23,6 @@ server:
 
 jwt:
   secret: ${JWT_SECRET}
-  expiration: 86400000
 
 eureka:
   client:

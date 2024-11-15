@@ -2,7 +2,7 @@ package com.aya.user_service.mapper;
 
 import com.aya.user_service.model.Role;
 import com.aya.user_service.model.User;
-import com.aya.user_service.reqres.UserDto;
+import com.aya.user_service.reqres.RegisterRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -15,18 +15,18 @@ public class UserMapper {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User fromDtoToUser(UserDto userDto) {
+    public User fromDtoToUser(RegisterRequest registerRequest) {
         return User.builder()
-                .firstName(userDto.getFirstName())
-                .lastName(userDto.getLastName())
-                .email(userDto.getEmail())
-                .password(passwordEncoder.encode(userDto.getPassword()))
-                .role(Role.valueOf(userDto.getRole().toUpperCase()))
+                .firstName(registerRequest.getFirstName())
+                .lastName(registerRequest.getLastName())
+                .email(registerRequest.getEmail())
+                .password(passwordEncoder.encode(registerRequest.getPassword()))
+                .role(Role.valueOf(registerRequest.getRole().toUpperCase()))
                 .build();
     }
 
-    public UserDto fromUserToDto(User user) {
-        return UserDto.builder()
+    public RegisterRequest fromUserToDto(User user) {
+        return RegisterRequest.builder()
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())

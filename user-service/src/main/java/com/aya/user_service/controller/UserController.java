@@ -1,11 +1,10 @@
 package com.aya.user_service.controller;
 
-import com.aya.user_service.reqres.UserDto;
+import com.aya.user_service.reqres.RegisterRequest;
 import com.aya.user_service.service.UserService;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
-@PreAuthorize("hasRole('ADMIN')")
+//@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
     private final UserService userService;
 
@@ -33,21 +32,21 @@ public class UserController {
     }
 
     @PostMapping("/create-user")
-    public ResponseEntity<String> createUserAccount(@RequestBody @NotNull UserDto userDto) {
-        userService.createUser(userDto);
-        return new ResponseEntity<>("User with role " + userDto.getRole() + " has been created", HttpStatus.OK);
+    public ResponseEntity<String> createUserAccount(@RequestBody @NotNull RegisterRequest registerRequest) {
+        userService.createUser(registerRequest);
+        return new ResponseEntity<>("User with role " + registerRequest.getRole() + " has been created", HttpStatus.OK);
     }
 
     @GetMapping("/get-by-email")
-    public ResponseEntity<UserDto> getUserByEmail(@RequestBody @NotNull String email) {
-        UserDto userDto = userService.getUserByEmail(email);
-        return new ResponseEntity<>(userDto, HttpStatus.OK);
+    public ResponseEntity<RegisterRequest> getUserByEmail(@RequestBody @NotNull String email) {
+        RegisterRequest registerRequest = userService.getUserByEmail(email);
+        return new ResponseEntity<>(registerRequest, HttpStatus.OK);
     }
 
     @GetMapping("/get-by-id/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable("id") @NotNull Integer id) {
-        UserDto userDto = userService.getUserById(id);
-        return new ResponseEntity<>(userDto, HttpStatus.OK);
+    public ResponseEntity<RegisterRequest> getUserById(@PathVariable("id") @NotNull Integer id) {
+        RegisterRequest registerRequest = userService.getUserById(id);
+        return new ResponseEntity<>(registerRequest, HttpStatus.OK);
     }
 
     @GetMapping("/get-email-by-id/{id}")
@@ -57,9 +56,9 @@ public class UserController {
     }
 
     @GetMapping("/get-all")
-    public ResponseEntity<List<UserDto>> getAllUsers() {
-        List<UserDto> userDtoList = userService.getAllUsers();
-        return new ResponseEntity<>(userDtoList, HttpStatus.OK);
+    public ResponseEntity<List<RegisterRequest>> getAllUsers() {
+        List<RegisterRequest> registerRequestList = userService.getAllUsers();
+        return new ResponseEntity<>(registerRequestList, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete-user")

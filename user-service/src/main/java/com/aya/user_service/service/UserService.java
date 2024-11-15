@@ -6,7 +6,7 @@ import com.aya.user_service.mapper.UserMapper;
 import com.aya.user_service.model.Role;
 import com.aya.user_service.model.User;
 import com.aya.user_service.repository.UserRepository;
-import com.aya.user_service.reqres.UserDto;
+import com.aya.user_service.reqres.RegisterRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,16 +20,16 @@ public class UserService {
     private final UserMapper userMapper;
     private static final String USER_NOT_FOUND_MESSAGE = "User not found!";
 
-    public void createUser(UserDto userDto) {
-        if (userDto == null) {
+    public void createUser(RegisterRequest registerRequest) {
+        if (registerRequest == null) {
             throw new InvalidUserDataException("User data cannot be null!");
         }
 
-        User user = userMapper.fromDtoToUser(userDto);
+        User user = userMapper.fromDtoToUser(registerRequest);
         userRepository.save(user);
     }
 
-    public UserDto getUserByEmail(String email) {
+    public RegisterRequest getUserByEmail(String email) {
         if (email == null) {
             throw new InvalidUserDataException("Email cannot be null!");
         }
@@ -42,7 +42,7 @@ public class UserService {
         }
     }
 
-    public UserDto getUserById(int id) {
+    public RegisterRequest getUserById(int id) {
         if (id == 0) {
             throw new InvalidUserDataException("User id cannot be null!");
         }
@@ -68,7 +68,7 @@ public class UserService {
         }
     }
 
-    public List<UserDto> getAllUsers() {
+    public List<RegisterRequest> getAllUsers() {
         Optional<List<User>> users = Optional.of(userRepository.findAll());
         return users.map(userList ->
                         userList.stream()

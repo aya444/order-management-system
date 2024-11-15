@@ -1,14 +1,13 @@
 package com.aya.user_service.controller;
 
-import com.aya.user_service.reqres.LogInRequest;
 import com.aya.user_service.reqres.AuthenticationResponse;
+import com.aya.user_service.reqres.LogInRequest;
 import com.aya.user_service.service.LoginService;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
@@ -17,7 +16,9 @@ public class LoginController {
     private final LoginService loginService;
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody LogInRequest request) throws IllegalAccessException {
-        return ResponseEntity.ok(loginService.authenticate(request));
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody @NotNull LogInRequest request) {
+        AuthenticationResponse authenticationResponse = loginService.login(request);
+        return new ResponseEntity<>(authenticationResponse, HttpStatus.OK);
     }
+
 }
