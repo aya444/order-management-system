@@ -63,11 +63,6 @@ public class JwtUtils {
         return extractClaim(token, Claims::getSubject); // getSubject() -> Subject(username) of the JWT (the user)
     }
 
-//    public List<String> extractRoles(String token) {
-//        Claims claims = extractAllClaims(token);
-//        return claims.get("roles", List.class); // Ensure "roles" matches the claim key
-//    }
-
 //     5- Generate a JWT token for the user
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>(); // Claims are the payload of the token, where we store user-related data such as roles, user ID, or other metadata.
@@ -75,7 +70,7 @@ public class JwtUtils {
         // Add roles to the claims
         claims.put("roles", userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role) // Ensure ROLE_ prefix
+//                .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role) // Ensure ROLE_ prefix
                 .toList());
         return createToken(claims, userDetails.getUsername());
     }
