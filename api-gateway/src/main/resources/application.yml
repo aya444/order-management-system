@@ -2,38 +2,32 @@ spring:
   application:
     name: api-gateway
 
-  main:
-    web-application-type: reactive
-
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
-
       routes:
-        - id: inventory-service
-          uri: lb://INVENTORY-SERVICE
-          predicates:
-            - Path=/product/**
-            - Path=/category/**
-            - Path=/inventory/**
+        # Route for USER-SERVICE
         - id: user-service
-          uri: lb://USER-SERVICE
+          uri: lb://USER-SERVICE # Load-balances requests to USER-SERVICE
           predicates:
-            - Path=/user/**
-            - Path=/admin/**
-      default-filters:
-        - TokenRelay # Pass token to downstream services
+            - Path=/user/** # Routes matching /user/** are forwarded to USER-SERVICE
+          filters:
+            - AuthenticationFilter
 
-jwt:
-  secret: ${JWT_SECRET}
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/  # Eureka server URL
+
 
 server:
-  port: 8765
+  port: 8765 # API Gateway port
+
+jwt:
+  secret: ${JWT_SECRET} # Replace with your actual JWT secret
 
 logging:
   level:
     org.springframework.cloud.gateway: DEBUG
-
+    org.springframework.cloud.netflix.eureka: DEBUG
+    com.netflix.discovery: DEBUG
 
