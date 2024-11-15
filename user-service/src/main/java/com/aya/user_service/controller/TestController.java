@@ -5,10 +5,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/user/test")
 public class TestController {
 
-    @GetMapping("/test")
+    @GetMapping()
     public String test() {
         return "User Service is working!";
     }

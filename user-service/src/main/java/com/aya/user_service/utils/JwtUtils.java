@@ -7,6 +7,7 @@ import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -63,25 +64,24 @@ public class JwtUtils {
         return extractClaim(token, Claims::getSubject); // getSubject() -> Subject(username) of the JWT (the user)
     }
 
-    public List<String> extractRoles(String token) {
-        Claims claims = extractAllClaims(token);
-        return claims.get("roles", List.class); // Ensure "roles" matches the claim key
-    }
-
+//    public List<String> extractRoles(String token) {
+//        Claims claims = extractAllClaims(token);
+//        return claims.get("roles", List.class); // Ensure "roles" matches the claim key
+//    }
 
     // 5- Generate a JWT token for the user
-    public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>(); // Claims are the payload of the token, where we store user-related data such as roles, user ID, or other metadata.
+//    public String generateToken(UserDetails userDetails) {
+//        Map<String, Object> claims = new HashMap<>(); // Claims are the payload of the token, where we store user-related data such as roles, user ID, or other metadata.
+//
+//        // Add roles to the claims
+//        claims.put("roles", userDetails.getAuthorities().stream()
+//                .map(GrantedAuthority::getAuthority)
+//                .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role) // Ensure ROLE_ prefix
+//                .toList());
+//        return createToken(claims, userDetails.getUsername());
+//    }
 
-        // Add roles to the claims
-        claims.put("roles", userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role) // Ensure ROLE_ prefix
-                .toList());
-        return createToken(claims, userDetails.getUsername());
-    }
-
-    private String createToken(Map<String, Object> claims, String subject) {
+    public String generateToken(Map<String, Object> claims, String subject) {
         Date creationDate = new Date(System.currentTimeMillis());
         Date expirationDate = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24); // 24 hours
 
@@ -92,6 +92,10 @@ public class JwtUtils {
                 .expiration(expirationDate) // Token expiration time
                 .signWith(getSignInKey()) // Signing key
                 .compact(); // Generate the token
+    }
+
+    public String generateToken(String username){
+        return generateToken(new HashMap<>(), username);
     }
 
     private Date extractExpiration(String token) {
@@ -107,7 +111,11 @@ public class JwtUtils {
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
+    public void validateToken(final String token) {
+        Jwts.parser().setSigningKey(getSignInKey()).build().parseClaimsJws(token);
+    }
 
+//
 //    public String generateToken(String userId) {
 //        Date creationDate = new Date(System.currentTimeMillis());
 //        Date expirationDate = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24); // 24 hours
@@ -118,10 +126,5 @@ public class JwtUtils {
 //                .expiration(expirationDate) // Token expiration time
 //                .signWith(getSignInKey()) // Signing key
 //                .compact(); // Generate the token
-//    }
-//
-//    private SecretKey getSignInKey() {
-//        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
-//        return Keys.hmacShaKeyFor(keyBytes);
 //    }
 }
